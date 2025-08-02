@@ -102,8 +102,11 @@ class SignupScreen extends StatelessWidget {
                           return null;
                         },
                         hintText: "John Doe",
-                        suffixIcon: Icons.person_outline,
-                        fieldName: 'Full Name',
+                        suffixIcon: IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.person_outline),
+                        ),
+                        label: 'Full Name',
                       ),
 
                       // Email
@@ -122,8 +125,11 @@ class SignupScreen extends StatelessWidget {
                           return null;
                         },
                         hintText: "example@email.com",
-                        suffixIcon: Icons.mail_outline,
-                        fieldName: 'Email Address',
+                        suffixIcon: IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.mail_outline),
+                        ),
+                        label: 'Email Address',
                       ),
 
                       // Password
@@ -151,8 +157,18 @@ class SignupScreen extends StatelessWidget {
                           return null;
                         },
                         hintText: "Enter your password",
-                        suffixIcon: Icons.lock_outline,
-                        fieldName: 'Password',
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            cubit.togglePasswordVisibility();
+                          },
+                          icon: Icon(
+                            cubit.obscure
+                                ? Icons.lock_outline
+                                : Icons.lock_open_outlined,
+                          ),
+                        ),
+                        label: 'Password',
+                        obscureText: cubit.obscure,
                       ),
 
                       20.verticalSpace,

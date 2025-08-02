@@ -8,8 +8,10 @@ class TextFieldAuth extends StatelessWidget {
   final bool obscureText;
   final FormFieldValidator<String>? validator;
   final TextInputType keyboardType;
-  final IconData? suffixIcon;
-  final String fieldName;
+  final IconButton? suffixIcon;
+  final String label;
+  final TextInputAction? textInputAction;
+  final void Function(String)? onFieldSubmitted;
 
   const TextFieldAuth({
     super.key,
@@ -20,7 +22,9 @@ class TextFieldAuth extends StatelessWidget {
     this.validator,
     this.keyboardType = TextInputType.text,
     this.suffixIcon,
-    required this.fieldName,
+    required this.label,
+    this.textInputAction,
+    this.onFieldSubmitted,
   });
 
   @override
@@ -28,12 +32,12 @@ class TextFieldAuth extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 35.0.r),
       child: SizedBox(
-        height: 102.h, // Increased height to fit error text
+        height: 102.h,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              fieldName,
+              label,
               style: TextStyle(fontSize: 10.r, color: Colors.grey),
             ),
             SizedBox(height: 4.h),
@@ -42,6 +46,9 @@ class TextFieldAuth extends StatelessWidget {
               obscureText: obscureText,
               validator: validator,
               keyboardType: keyboardType,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              textInputAction: textInputAction,
+              onFieldSubmitted: onFieldSubmitted,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 16.w,
@@ -55,14 +62,14 @@ class TextFieldAuth extends StatelessWidget {
                 ),
                 filled: true,
                 fillColor: Colors.grey[300],
-                suffixIcon: suffixIcon != null ? Icon(suffixIcon) : null,
-                suffixIconColor: Colors.grey,
-                prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+                suffixIcon: suffixIcon,
+                prefixIcon: prefixIcon != null
+                    ? Icon(prefixIcon, size: 24.r, color: Colors.grey)
+                    : null,
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(12.r),
                 ),
-                // Add error borders:
                 errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.red, width: 1.5),
                   borderRadius: BorderRadius.circular(12.r),

@@ -20,3 +20,9 @@ class SignUpError extends SignUpState {
   final String message;
   SignUpError(this.message);
 }
+
+class SignUpTogglePassword  extends SignUpState{
+  final bool obscure;
+
+  SignUpTogglePassword(this.obscure);
+}
