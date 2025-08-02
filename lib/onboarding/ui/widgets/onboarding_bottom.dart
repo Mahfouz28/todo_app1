@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_app1/homeScreen/ui/Screen/home_screen.dart';
+import 'package:todo_app1/auth/login/ui/screen/login_screen.dart';
 import 'package:todo_app1/onboarding/bloC/onboardingcubit.dart';
 
 /// A bottom section of the onboarding screen that includes:
@@ -120,7 +120,7 @@ class OnboardingBottom extends StatelessWidget {
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const HomeScreen(),
+                        builder: (context) => const LoginScreen(),
                       ),
                       (route) => false,
                     );

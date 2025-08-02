@@ -9,11 +9,11 @@ sealed class HomeScreenState extends Equatable {
 
 final class HomeScreenInitial extends HomeScreenState {}
 
-final class HomeScreenColorChanged extends HomeScreenState {
-  final bool isColored;
+final class CategoryColorsUpdated extends HomeScreenState {
+  final Map<String, bool> cardStates;
 
-  const HomeScreenColorChanged(this.isColored);
+  const CategoryColorsUpdated(this.cardStates);
 
   @override
-  List<Object> get props => [isColored];
+  List<Object> get props => [cardStates];
 }

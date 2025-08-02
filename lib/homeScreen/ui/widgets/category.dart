@@ -6,6 +6,7 @@ class NoteCategoryCard extends StatelessWidget {
   final String title;
   final Color color;
   final VoidCallback? onTap;
+  final Color backGroungColor;
 
   const NoteCategoryCard({
     super.key,
@@ -13,6 +14,7 @@ class NoteCategoryCard extends StatelessWidget {
     required this.title,
     required this.color,
     this.onTap,
+    required this.backGroungColor,
   });
 
   @override
@@ -24,7 +26,7 @@ class NoteCategoryCard extends StatelessWidget {
         height: 50.h,
         padding: EdgeInsets.symmetric(horizontal: 10.w),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color:backGroungColor,
           borderRadius: BorderRadius.circular(16.r),
           boxShadow: [
             BoxShadow(
