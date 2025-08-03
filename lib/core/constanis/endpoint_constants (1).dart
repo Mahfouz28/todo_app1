@@ -4,4 +4,5 @@ class EndpointConstants {
 
   static const String login = '/auth/login.php';
   static const String register = '/auth/register.php';
+  static const String getAll = "/note/getAll.php?users_id=1";
 }

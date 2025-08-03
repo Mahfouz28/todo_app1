@@ -13,10 +13,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<HomeScreenCubit>().getUserData();
-    });
-
     return Scaffold(
       backgroundColor: const Color(0xffF2F2F6),
       body: SafeArea(
@@ -28,13 +24,8 @@ class HomeScreen extends StatelessWidget {
                 /// Header with user info
                 BlocBuilder<HomeScreenCubit, HomeScreenState>(
                   builder: (context, state) {
-                    if (state is UserDataLoaded) {
-                      return NotesHeader(
-                        username: state.user.username,
-                        
-                      );
-                    }
-                    return const NotesHeader();
+                    final cubit = context.read<HomeScreenCubit>();
+                    return NotesHeader(username: cubit.userName ?? "User");
                   },
                 ),
 
@@ -145,18 +136,30 @@ class HomeScreen extends StatelessWidget {
                 /// Important Notes List
                 Padding(
                   padding: const EdgeInsets.only(top: 10, bottom: 6),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: 10,
-                    itemBuilder: (context, index) => const ImportantInfo(
-                      title: 'Important',
-                      subtitle:
-                          'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                      prefixText: 'Maecenas sed ',
-                      boldText: 'diam cum ligula justo.',
-                    ),
-                    separatorBuilder: (context, index) => 6.verticalSpace,
+                  child: BlocBuilder<HomeScreenCubit, HomeScreenState>(
+                    builder: (context, state) {
+                      final cubit = context.read<HomeScreenCubit>();
+
+                      if (cubit.notes.isEmpty) {
+                        return const Center(child: Text("No notes available."));
+                      }
+
+                      return ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: cubit.notes.length,
+                        itemBuilder: (context, index) {
+                          final note = cubit.notes[index];
+                          return ImportantInfo(
+                            title: note.title ?? 'No Title',
+                            subtitle: note.content ?? '',
+                            prefixText: 'Note ID:',
+                            boldText: ' ${note.noteId}',
+                          );
+                        },
+                        separatorBuilder: (context, index) => 6.verticalSpace,
+                      );
+                    },
                   ),
                 ),
               ],

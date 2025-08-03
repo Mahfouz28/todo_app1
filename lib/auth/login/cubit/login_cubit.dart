@@ -1,9 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app1/auth/login/model/usermodel.dart';
 import 'package:todo_app1/auth/login/repo/login_repo.dart';
+import 'package:todo_app1/auth/login/ui/screen/login_screen.dart';
 
 part 'login_state.dart';
 
@@ -32,7 +33,8 @@ class LoginCubit extends Cubit<LoginState> {
       );
 
       pref.setString("username", userModel.username.toString());
-      pref.setString("id", userModel.id.toString());
+      pref.setInt("userId", userModel.id);
+      print(userModel.id);
       pref.setString("email", userModel.email.toString());
       emit(LoginSuccess(userModel));
       final prefs = await SharedPreferences.getInstance();
@@ -47,5 +49,14 @@ class LoginCubit extends Cubit<LoginState> {
     emit(LoginTogglePassword(obscure));
   }
 
-  
+  Future<void> logout(BuildContext context) async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    await pref.clear();
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+      (route) => false,
+    );
+  }
 }

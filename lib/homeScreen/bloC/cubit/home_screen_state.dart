@@ -18,11 +18,4 @@ final class CategoryColorsUpdated extends HomeScreenState {
   List<Object> get props => [cardStates];
 }
 
-final class UserDataLoaded extends HomeScreenState {
-  final UserModel user;
-
-  const UserDataLoaded(this.user);
-
-  @override
-  List<Object> get props => [user];
-}
+final class NotesFetched extends HomeScreenState {}
