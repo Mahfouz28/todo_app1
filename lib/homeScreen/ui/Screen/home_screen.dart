@@ -13,6 +13,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HomeScreenCubit>().getUserData();
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xffF2F2F6),
       body: SafeArea(
@@ -21,10 +25,23 @@ class HomeScreen extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const NotesHeader(),
+                /// Header with user info
+                BlocBuilder<HomeScreenCubit, HomeScreenState>(
+                  builder: (context, state) {
+                    if (state is UserDataLoaded) {
+                      return NotesHeader(
+                        username: state.user.username,
+                        
+                      );
+                    }
+                    return const NotesHeader();
+                  },
+                ),
+
                 const CustomTextFormField(hintText: 'Search'),
                 20.verticalSpace,
 
+                /// Categories
                 BlocBuilder<HomeScreenCubit, HomeScreenState>(
                   builder: (context, state) {
                     final cubit = context.read<HomeScreenCubit>();
@@ -93,6 +110,7 @@ class HomeScreen extends StatelessWidget {
                 ),
 
                 20.verticalSpace,
+
                 Align(
                   alignment: Alignment.topLeft,
                   child: Text(
@@ -101,6 +119,8 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 15.verticalSpace,
+
+                /// Static Info Cards
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
@@ -121,6 +141,8 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+
+                /// Important Notes List
                 Padding(
                   padding: const EdgeInsets.only(top: 10, bottom: 6),
                   child: ListView.separated(

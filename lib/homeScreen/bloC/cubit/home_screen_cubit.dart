@@ -1,10 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo_app1/auth/login/model/usermodel.dart';
 
 part 'home_screen_state.dart';
 
 class HomeScreenCubit extends Cubit<HomeScreenState> {
-  // Key = title of the card, value = isSelected
   final Map<String, bool> _cardStates = {
     'All Notes': false,
     'Favourites': false,
@@ -20,4 +21,17 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   }
 
   bool getCardState(String title) => _cardStates[title] ?? false;
+  void getUserData() async {
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    final userModel = UserModel(
+      id: pref.getInt('userId') ?? 0,
+      username: pref.getString('username') ?? '',
+      email: pref.getString('email') ?? '',
+      created: DateTime.now(),
+    );
+
+    emit(
+      UserDataLoaded(userModel),
+    ); 
+  }
 }

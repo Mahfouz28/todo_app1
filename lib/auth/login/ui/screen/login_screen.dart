@@ -41,7 +41,7 @@ class LoginScreen extends StatelessWidget {
             } else if (state is LoginError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('login Failluer ${state.message} '),
+                  content: Text('Login failed: ${state.message}'),
                   backgroundColor: Colors.red,
                   behavior: SnackBarBehavior.floating,
                   duration: const Duration(seconds: 3),
