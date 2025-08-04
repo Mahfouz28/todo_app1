@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:todo_app1/homeScreen/bloC/cubit/home_screen_cubit.dart';
+import 'package:todo_app1/homeScreen/ui/Screen/add_note_screen.dart';
 import 'package:todo_app1/homeScreen/ui/widgets/category.dart';
 import 'package:todo_app1/homeScreen/ui/widgets/header.dart';
 import 'package:todo_app1/homeScreen/ui/widgets/imaortant_card.dart';
@@ -21,24 +22,26 @@ class HomeScreen extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                /// Header with user info
+                /// Top header with username
                 BlocBuilder<HomeScreenCubit, HomeScreenState>(
                   builder: (context, state) {
-                    final cubit = context.read<HomeScreenCubit>();
+                    final cubit = context.watch<HomeScreenCubit>();
                     return NotesHeader(username: cubit.userName ?? "User");
                   },
                 ),
 
+                /// Search input
                 const CustomTextFormField(hintText: 'Search'),
                 20.verticalSpace,
 
-                /// Categories
+                /// Note categories
                 BlocBuilder<HomeScreenCubit, HomeScreenState>(
                   builder: (context, state) {
-                    final cubit = context.read<HomeScreenCubit>();
+                    final cubit = context.watch<HomeScreenCubit>();
 
                     return Column(
                       children: [
+                        // First row: All Notes + Favourites
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -67,7 +70,10 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ],
                         ),
+
                         12.verticalSpace,
+
+                        // Second row: Hidden + Trash
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -102,6 +108,7 @@ class HomeScreen extends StatelessWidget {
 
                 20.verticalSpace,
 
+                /// Section title: Recent Notes
                 Align(
                   alignment: Alignment.topLeft,
                   child: Text(
@@ -109,49 +116,54 @@ class HomeScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                 ),
+
                 15.verticalSpace,
 
-                /// Static Info Cards
+                /// Static info cards
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
-                    InfoCard(
-                      title: "Getting Started",
-                      description:
-                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                      boldText: "Maecenas sed diam cum ligula justo.",
-                      footer: "elementum.",
+                    Expanded(
+                      child: InfoCard(
+                        title: "Getting Started",
+                        description:
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                        boldText: "Maecenas sed diam cum ligula justo.",
+                        footer: "elementum.",
+                      ),
                     ),
                     SizedBox(width: 10),
-                    InfoCard(
-                      title: "UX Design",
-                      description:
-                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                      boldText: "Maecenas sed diam cum ligula justo.",
-                      footer: "elementum.",
+                    Expanded(
+                      child: InfoCard(
+                        title: "UX Design",
+                        description:
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                        boldText: "Maecenas sed diam cum ligula justo.",
+                        footer: "elementum.",
+                      ),
                     ),
                   ],
                 ),
 
-                /// Important Notes List
+                /// Notes list from state
                 Padding(
                   padding: const EdgeInsets.only(top: 10, bottom: 6),
                   child: BlocBuilder<HomeScreenCubit, HomeScreenState>(
                     builder: (context, state) {
-                      final cubit = context.read<HomeScreenCubit>();
+                      final cubit = context.watch<HomeScreenCubit>();
+                      final notes = cubit.notes;
 
-                      if (cubit.notes.isEmpty) {
+                      if (notes.isEmpty) {
                         return const Center(child: Text("No notes available."));
                       }
 
                       return ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: cubit.notes.length,
+                        itemCount: notes.length,
                         itemBuilder: (context, index) {
-                          final note = cubit.notes[index];
+                          final note = notes[index];
                           return ImportantInfo(
-                            title: note.title ?? 'No Title',
+                            title: note.title ?? 'Untitled',
                             subtitle: note.content ?? '',
                             prefixText: 'Note ID:',
                             boldText: ' ${note.noteId}',
@@ -166,6 +178,21 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+
+      /// Floating action button to add new note
+      floatingActionButton: ElevatedButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CreateNotePage()),
+          );
+          if (result == true) {
+            // Refresh note list after returning from add page
+            context.read<HomeScreenCubit>().refreshNotes();
+          }
+        },
+        child: const Icon(Icons.note_add_rounded),
       ),
     );
   }

@@ -1,29 +1,26 @@
 class NoteModel {
-  final int noteId;
-  final String title;
-  final String content;
-  final int usersId;
-  final DateTime createdAt;
-  final DateTime? updatedAt;
+  int? noteId;
+  String? title;
+  String? content; 
+  int? usersId;
+  DateTime? createdAt;
 
   NoteModel({
-    required this.noteId,
-    required this.title,
-    required this.content,
-    required this.usersId,
-    required this.createdAt,
-    this.updatedAt,
+    this.noteId,
+    this.title,
+    this.content,
+    this.usersId,
+    this.createdAt,
   });
 
   factory NoteModel.fromJson(Map<String, dynamic> json) {
     return NoteModel(
       noteId: json['note_id'],
       title: json['title'],
-      content: json['content'],
+      content: json['message'],
       usersId: json['users_id'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.tryParse(json['updated_at'])
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
           : null,
     );
   }
@@ -32,10 +29,9 @@ class NoteModel {
     return {
       'note_id': noteId,
       'title': title,
-      'content': content,
+      'message': content,
       'users_id': usersId,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt?.toIso8601String(),
+      'created_at': createdAt?.toIso8601String(),
     };
   }
 }

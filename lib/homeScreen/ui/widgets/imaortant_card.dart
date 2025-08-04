@@ -31,7 +31,13 @@ class ImportantInfo extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
           ),
           SizedBox(height: 8.h),
-          Text(subtitle),
+          Text(
+            subtitle,
+            style: TextStyle(color: Colors.black87, fontSize: 14.sp),
+            maxLines: 5,
+            overflow: TextOverflow.ellipsis,
+          ),
+
           SizedBox(height: 4.h),
           Text.rich(
             TextSpan(
