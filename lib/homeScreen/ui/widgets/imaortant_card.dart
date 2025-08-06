@@ -6,6 +6,7 @@ class ImportantInfo extends StatelessWidget {
   final String subtitle;
   final String prefixText;
   final String boldText;
+  final VoidCallback onPressed;
 
   const ImportantInfo({
     super.key,
@@ -13,12 +14,14 @@ class ImportantInfo extends StatelessWidget {
     required this.subtitle,
     required this.prefixText,
     required this.boldText,
+    required this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(top: 15.r, bottom: 15.r, right: 6.r, left: 15.r),
+      width: double.infinity,
+      padding: EdgeInsets.only(top: 10.r, bottom: 15.r, right: 6.r, left: 15.r),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
@@ -26,9 +29,18 @@ class ImportantInfo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
+              ),
+              TextButton(
+                onPressed: onPressed,
+                child: Text("Edit", style: TextStyle(color: Colors.blue)),
+              ),
+            ],
           ),
           SizedBox(height: 8.h),
           Text(

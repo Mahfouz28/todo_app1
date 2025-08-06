@@ -48,3 +48,22 @@ class UserDataLoaded extends HomeScreenState {
   @override
   List<Object?> get props => [userId, username, email];
 }
+
+class NoteDeletedSuccess extends HomeScreenState {}
+
+class NoteError extends HomeScreenState {
+  String Messege;
+  NoteError(this.Messege) {}
+}
+
+class NoteUpdatedSuccess extends HomeScreenState {}
+class NoteUpdatedFailure extends HomeScreenState {
+
+final String error;
+
+  NoteUpdatedFailure(this.error);
+
+  @override
+  List<Object?> get props => [error];
+}
+

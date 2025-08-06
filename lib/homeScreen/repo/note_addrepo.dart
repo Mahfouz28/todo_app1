@@ -1,6 +1,6 @@
 import 'package:todo_app1/core/constanis/endpoint_constants%20(1).dart';
-import 'package:todo_app1/homeScreen/model/not_add_model.dart';
 import 'package:todo_app1/core/network/dio_client.dart';
+import 'package:todo_app1/homeScreen/model/note_model.dart';
 
 /// Repository responsible for sending a new note to the server.
 class NoteAddRepo {
@@ -18,7 +18,7 @@ class NoteAddRepo {
   ///
   /// Throws:
   /// - [Exception] if the request fails or returns an unexpected response
-  Future<NoteAddModel> addNote(
+  Future<NoteModel> addNote(
     String title,
     String content,
     String usersId,
@@ -28,13 +28,13 @@ class NoteAddRepo {
         EndpointConstants.addNote,
         queryParameters: {
           "title": title,
-          "message": content ,
+          "message": content,
           "users_id": usersId,
         },
       );
 
       if (response.statusCode == 200 && response.data['status'] == "success") {
-        return NoteAddModel.fromJson(response.data);
+        return NoteModel.fromJson(response.data);
       } else {
         throw Exception(
           'Failed to add note: ${response.data['content'] ?? 'Unexpected error.'}',

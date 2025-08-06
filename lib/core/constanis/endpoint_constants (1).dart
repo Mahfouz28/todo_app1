@@ -5,4 +5,6 @@ class EndpointConstants {
   static const String register = '/auth/register.php';
   static const String getAll = "/note/getAll.php?users_id=1";
   static const String addNote = "/note/add.php";
+  static const String delete = "/note/delete.php";
+  static const String edit = "/note/update.php";
 }
