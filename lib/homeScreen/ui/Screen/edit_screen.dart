@@ -101,10 +101,10 @@ class _EditScreenState extends State<EditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Edit Note')),
-        body: Padding(
+    return Scaffold(
+      appBar: AppBar(title: const Text('Edit Note')),
+      body: SingleChildScrollView(
+        child: Padding(
           padding: EdgeInsets.all(24.0.r),
           child: Form(
             key: formKey,

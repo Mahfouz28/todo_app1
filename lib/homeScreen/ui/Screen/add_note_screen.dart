@@ -44,48 +44,49 @@ class _CreateNotePageState extends State<CreateNotePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(title: const Text('Create Note')),
-        body: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  controller: _titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Title',
-                    border: OutlineInputBorder(),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'Title',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) =>
+                        value == null || value.isEmpty ? 'Enter a title' : null,
                   ),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Enter a title' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _contentController,
-                  decoration: const InputDecoration(
-                    labelText: 'Content',
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _contentController,
+                    decoration: const InputDecoration(
+                      labelText: 'Content',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: 6,
+                    validator: (value) =>
+                        value == null || value.isEmpty ? 'Enter content' : null,
                   ),
-                  maxLines: 6,
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Enter content' : null,
-                ),
-                const SizedBox(height: 24),
-                _isLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton.icon(
-                        onPressed: _saveNote,
-                        icon: const Icon(Icons.save),
-                        label: const Text('Save Note'),
-                      ),
-              ],
+                  const SizedBox(height: 24),
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton.icon(
+                          onPressed: _saveNote,
+                          icon: const Icon(Icons.save),
+                          label: const Text('Save Note'),
+                        ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
+      
     );
   }
 }
