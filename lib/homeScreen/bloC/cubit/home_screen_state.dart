@@ -57,9 +57,9 @@ class NoteError extends HomeScreenState {
 }
 
 class NoteUpdatedSuccess extends HomeScreenState {}
-class NoteUpdatedFailure extends HomeScreenState {
 
-final String error;
+class NoteUpdatedFailure extends HomeScreenState {
+  final String error;
 
   NoteUpdatedFailure(this.error);
 
@@ -67,3 +67,11 @@ final String error;
   List<Object?> get props => [error];
 }
 
+class SearchResultsUpdated extends HomeScreenState {
+  final List<NoteModel> results;
+
+  const SearchResultsUpdated(this.results);
+
+  @override
+  List<Object?> get props => [results];
+}

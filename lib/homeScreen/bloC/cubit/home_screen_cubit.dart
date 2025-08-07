@@ -21,6 +21,29 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     'Hidden': false,
     'Trash': false,
   };
+  final TextEditingController searchController =
+      TextEditingController(); // This is a controller for the search input field
+
+  List<NoteModel> _searchResults =
+      []; // This will hold the filtered search results
+  List<NoteModel> get searchResults =>
+      _searchResults; // Getter for the search results list
+  void searchNotes(String keyword) {
+    if (keyword.isEmpty) {
+      _searchResults = List.from(_notes);
+    } else {
+      _searchResults = _notes.where((note) {
+        final titleMatch =
+            note.title?.toLowerCase().contains(keyword.toLowerCase()) ?? false;
+        final contentMatch =
+            note.content?.toLowerCase().contains(keyword.toLowerCase()) ??
+            false;
+        return titleMatch || contentMatch;
+      }).toList();
+    }
+
+    emit(SearchResultsUpdated(_searchResults));
+  }
 
   // Repositories for interacting with the backend
   final NoteRepo noteRepo = NoteRepo();
@@ -147,11 +170,13 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
   // Delete a note
   Future<void> deleteNote(String noteId) async {
     try {
-      await deleteRepo.deleteNote(noteId);
-
-      _notes.removeWhere((note) => note.noteId.toString() == noteId);
-
-      emit(NotesFetched());
+      final success = await deleteRepo.deleteNote(noteId);
+      if (success) {
+        _notes.removeWhere((note) => note.noteId.toString() == noteId);
+        emit(NotesFetched());
+      } else {
+        emit(NotesFetched());
+      }
     } catch (e) {
       emit(NoteError("Failed to delete note: $e"));
     }
@@ -172,5 +197,18 @@ class HomeScreenCubit extends Cubit<HomeScreenState> {
     } catch (e) {
       emit(NoteUpdatedFailure(e.toString()));
     }
+  }
+
+  List<NoteModel> getLastTwoNotes() {
+    List<NoteModel> sortedNotes = List.from(_notes)
+      ..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+
+    return sortedNotes.take(2).toList();
+  }
+
+  List<NoteModel> getLastTwoSearchResults() {
+    List<NoteModel> sorted = List.from(_searchResults)
+      ..sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
+    return sorted.take(2).toList();
   }
 }

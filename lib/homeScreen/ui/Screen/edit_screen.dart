@@ -101,43 +101,45 @@ class _EditScreenState extends State<EditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Edit Note')),
-      body: Padding(
-        padding:  EdgeInsets.all(24.0.r),
-        child: Form(
-          key: formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
+    return SingleChildScrollView(
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Edit Note')),
+        body: Padding(
+          padding: EdgeInsets.all(24.0.r),
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Title',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Enter a title' : null,
                 ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Enter a title' : null,
-              ),
-               SizedBox(height: 16.h),
-              TextFormField(
-                controller: contentController,
-                decoration: const InputDecoration(
-                  labelText: 'Content',
-                  border: OutlineInputBorder(),
+                SizedBox(height: 16.h),
+                TextFormField(
+                  controller: contentController,
+                  decoration: const InputDecoration(
+                    labelText: 'Content',
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 6,
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Enter content' : null,
                 ),
-                maxLines: 6,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Enter content' : null,
-              ),
-               SizedBox(height: 24.h),
-              isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton.icon(
-                      onPressed: _saveEditedNote,
-                      icon: const Icon(Icons.save),
-                      label: const Text('Save Changes'),
-                    ),
-            ],
+                SizedBox(height: 24.h),
+                isLoading
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton.icon(
+                        onPressed: _saveEditedNote,
+                        icon: const Icon(Icons.save),
+                        label: const Text('Save Changes'),
+                      ),
+              ],
+            ),
           ),
         ),
       ),

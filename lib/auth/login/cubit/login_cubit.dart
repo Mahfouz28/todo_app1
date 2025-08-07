@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:todo_app1/auth/login/model/usermodel.dart';
 import 'package:todo_app1/auth/login/repo/login_repo.dart';
 import 'package:todo_app1/auth/login/ui/screen/login_screen.dart';
+import 'package:todo_app1/homeScreen/bloC/cubit/home_screen_cubit.dart';
 
 part 'login_state.dart';
 
@@ -53,9 +54,12 @@ class LoginCubit extends Cubit<LoginState> {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     await pref.clear();
 
+    /// Reset any in-memory data
+    emit(LoginInitial());
+
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
       (route) => false,
     );
   }

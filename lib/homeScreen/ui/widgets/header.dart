@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:todo_app1/auth/login/cubit/login_cubit.dart';
-import 'package:todo_app1/homeScreen/bloC/cubit/home_screen_cubit.dart';
 
 class NotesHeader extends StatelessWidget {
   final String? username;
@@ -24,7 +23,6 @@ class NotesHeader extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Id : ${context.read<HomeScreenCubit>().userId}"),
             Text(
               'Name: ${username ?? "Guest"} ',
               style: TextStyle(
@@ -55,8 +53,69 @@ class NotesHeader extends StatelessWidget {
               onPressed:
                   onMorePressed ??
                   () {
-                    context.read<LoginCubit>().logout(context);
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.r),
+                        ),
+                        title: Row(
+                          children: [
+                            Icon(Icons.logout, color: Colors.blue),
+                            SizedBox(width: 8.w),
+                            Text(
+                              'Logout',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.sp,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ],
+                        ),
+                        content: Text(
+                          'Are you sure you want to log out?',
+
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        actionsPadding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 8.h,
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(color: Colors.grey.shade700),
+                            ),
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.r),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context); // Close dialog
+                              context.read<LoginCubit>().logout(
+                                context,
+                              ); // Logout
+                            },
+                            child: const Text(
+                              'Log out',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   },
+
               style: OutlinedButton.styleFrom(
                 minimumSize: Size(22.w, 22.h),
                 side: const BorderSide(color: Colors.blue),

@@ -9,6 +9,7 @@ class CustomTextFormField extends StatelessWidget {
   final FormFieldValidator<String>? validator;
   final TextInputType keyboardType;
   final IconData? suffixIcon;
+  final void Function(String)? onChanged;
 
   const CustomTextFormField({
     super.key,
@@ -19,6 +20,7 @@ class CustomTextFormField extends StatelessWidget {
     this.validator,
     this.keyboardType = TextInputType.text,
     this.suffixIcon,
+    this.onChanged,
   });
 
   @override
@@ -26,6 +28,7 @@ class CustomTextFormField extends StatelessWidget {
     return SizedBox(
       height: 38.h,
       child: TextFormField(
+        onChanged: onChanged,
         controller: controller,
         obscureText: obscureText,
         validator: validator,

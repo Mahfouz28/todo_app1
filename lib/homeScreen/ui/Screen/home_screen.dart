@@ -8,7 +8,6 @@ import 'package:todo_app1/homeScreen/ui/Screen/edit_screen.dart';
 import 'package:todo_app1/homeScreen/ui/widgets/category.dart';
 import 'package:todo_app1/homeScreen/ui/widgets/header.dart';
 import 'package:todo_app1/homeScreen/ui/widgets/imaortant_card.dart';
-import 'package:todo_app1/homeScreen/ui/widgets/info_card.dart';
 import 'package:todo_app1/homeScreen/ui/widgets/searchbar.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -16,155 +15,219 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xffF2F2F6),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                /// Top header with username
-                BlocBuilder<HomeScreenCubit, HomeScreenState>(
-                  builder: (context, state) {
-                    final cubit = context.watch<HomeScreenCubit>();
-                    return NotesHeader(username: cubit.userName ?? "User");
-                  },
-                ),
-
-                /// Search input
-                const CustomTextFormField(hintText: 'Search'),
-                20.verticalSpace,
-
-                /// Note categories
-                BlocBuilder<HomeScreenCubit, HomeScreenState>(
-                  builder: (context, state) {
-                    final cubit = context.watch<HomeScreenCubit>();
-
-                    return Column(
-                      children: [
-                        // First row: All Notes + Favourites
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                              onTap: () => cubit.toggleCard('All Notes'),
-                              child: NoteCategoryCard(
-                                icon: Icons.description_outlined,
-                                title: 'All Notes',
-                                color: Colors.grey,
-                                backGroungColor: cubit.getCardState('All Notes')
-                                    ? Colors.grey
-                                    : Colors.white,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () => cubit.toggleCard('Favourites'),
-                              child: NoteCategoryCard(
-                                icon: Icons.star_border,
-                                title: 'Favourites',
-                                color: Colors.amber,
-                                backGroungColor:
-                                    cubit.getCardState('Favourites')
-                                    ? Colors.yellow
-                                    : Colors.white,
-                              ),
-                            ),
-                          ],
+    return BlocListener<HomeScreenCubit, HomeScreenState>(
+      listenWhen: (previous, current) =>
+          current is NotesLoading ||
+          current is NotesFetched ||
+          current is HomeScreenError,
+      listener: (context, state) {
+        if (state is NotesLoading) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => Dialog(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.all(20.r),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(16.r),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(color: Colors.blue),
+                      SizedBox(height: 16.h),
+                      Text(
+                        "Loading...",
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blue.shade700,
                         ),
-
-                        12.verticalSpace,
-
-                        // Second row: Hidden + Trash
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                              onTap: () => cubit.toggleCard('Hidden'),
-                              child: NoteCategoryCard(
-                                icon: Icons.visibility_off_outlined,
-                                title: 'Hidden',
-                                color: Colors.blue,
-                                backGroungColor: cubit.getCardState('Hidden')
-                                    ? Colors.blue
-                                    : Colors.white,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () => cubit.toggleCard('Trash'),
-                              child: NoteCategoryCard(
-                                icon: Icons.delete_outline,
-                                title: 'Trash',
-                                color: Colors.red,
-                                backGroungColor: cubit.getCardState('Trash')
-                                    ? Colors.red
-                                    : Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
-                ),
-
-                20.verticalSpace,
-
-                /// Section title: Recent Notes
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    "Recent Notes",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                      ),
+                    ],
                   ),
                 ),
-
-                15.verticalSpace,
-
-                /// Static info cards
-                Row(
-                  children: const [
-                    Expanded(
-                      child: InfoCard(
-                        title: "Getting Started",
-                        description:
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                        boldText: "Maecenas sed diam cum ligula justo.",
-                        footer: "elementum.",
+              ),
+            ),
+          );
+        } else if (state is NotesFetched || state is HomeScreenError) {
+          if (Navigator.canPop(context)) {
+            Navigator.of(context).pop();
+          }
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xffF2F2F6),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: RefreshIndicator(
+              onRefresh: () async {
+                await context.read<HomeScreenCubit>().refreshNotes();
+              },
+              color: Colors.blue,
+              backgroundColor: Colors.white,
+              displacement: 30,
+              child: SingleChildScrollView(
+                physics: BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    BlocBuilder<HomeScreenCubit, HomeScreenState>(
+                      builder: (context, state) {
+                        final cubit = context.watch<HomeScreenCubit>();
+                        return NotesHeader(username: cubit.userName ?? "User");
+                      },
+                    ),
+                    CustomTextFormField(
+                      hintText: 'Search',
+                      controller: context
+                          .read<HomeScreenCubit>()
+                          .searchController,
+                      onChanged: (value) {
+                        context.read<HomeScreenCubit>().searchNotes(value);
+                      },
+                    ),
+                    20.verticalSpace,
+                    BlocBuilder<HomeScreenCubit, HomeScreenState>(
+                      builder: (context, state) {
+                        final cubit = context.watch<HomeScreenCubit>();
+                        return Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () => cubit.toggleCard('All Notes'),
+                                  child: NoteCategoryCard(
+                                    icon: Icons.description_outlined,
+                                    title: 'All Notes',
+                                    color: Colors.grey,
+                                    backGroungColor:
+                                        cubit.getCardState('All Notes')
+                                        ? Colors.grey
+                                        : Colors.white,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () => cubit.toggleCard('Favourites'),
+                                  child: NoteCategoryCard(
+                                    icon: Icons.star_border,
+                                    title: 'Favourites',
+                                    color: Colors.amber,
+                                    backGroungColor:
+                                        cubit.getCardState('Favourites')
+                                        ? Colors.yellow
+                                        : Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            12.verticalSpace,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () => cubit.toggleCard('Hidden'),
+                                  child: NoteCategoryCard(
+                                    icon: Icons.visibility_off_outlined,
+                                    title: 'Hidden',
+                                    color: Colors.blue,
+                                    backGroungColor:
+                                        cubit.getCardState('Hidden')
+                                        ? Colors.blue
+                                        : Colors.white,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () => cubit.toggleCard('Trash'),
+                                  child: NoteCategoryCard(
+                                    icon: Icons.delete_outline,
+                                    title: 'Trash',
+                                    color: Colors.red,
+                                    backGroungColor: cubit.getCardState('Trash')
+                                        ? Colors.red
+                                        : Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    20.verticalSpace,
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        "Recent Notes",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: InfoCard(
-                        title: "UX Design",
-                        description:
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                        boldText: "Maecenas sed diam cum ligula justo.",
-                        footer: "elementum.",
-                      ),
+                    15.verticalSpace,
+                    BlocBuilder<HomeScreenCubit, HomeScreenState>(
+                      builder: (context, state) {
+                        final cubit = context.watch<HomeScreenCubit>();
+                        final recentNotes = cubit.searchController.text.isEmpty
+                            ? cubit.getLastTwoNotes()
+                            : cubit.getLastTwoSearchResults();
+
+                        if (recentNotes.isEmpty) {
+                          return const Center(child: Text("No recent notes."));
+                        }
+
+                        return Row(
+                          children: List.generate(recentNotes.length, (index) {
+                            final note = recentNotes[index];
+                            return Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  right: index == 0 ? 10.0 : 0,
+                                ),
+                                child: ImportantInfo(
+                                  title: note.title ?? 'Untitled',
+                                  subtitle: note.content ?? '',
+                                  prefixText: 'Note ID:',
+                                  boldText: ' ${note.noteId}',
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditScreen(
+                                          noteId: note.noteId.toString(),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          }),
+                        );
+                      },
                     ),
-                  ],
-                ),
-
-                /// Notes list from state
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 0),
-                  child: BlocBuilder<HomeScreenCubit, HomeScreenState>(
-                    builder: (context, state) {
-                      final cubit = context.watch<HomeScreenCubit>();
-                      final notes = cubit.notes;
-
-                      if (notes.isEmpty) {
-                        return const Center(child: Text("No notes available."));
-                      }
-
-                      return BlocBuilder<HomeScreenCubit, HomeScreenState>(
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10, bottom: 0),
+                      child: BlocBuilder<HomeScreenCubit, HomeScreenState>(
                         builder: (context, state) {
                           final cubit = context.watch<HomeScreenCubit>();
+                          final notes = cubit.searchController.text.isEmpty
+                              ? cubit.notes
+                              : cubit.searchResults;
 
-                          final List<NoteModel> localNotes = List.from(
-                            cubit.notes,
-                          );
+                          if (notes.isEmpty) {
+                            return const Center(
+                              child: Text("No notes available."),
+                            );
+                          }
+
+                          final List<NoteModel> localNotes = List.from(notes);
 
                           return ListView.separated(
                             shrinkWrap: true,
@@ -172,18 +235,13 @@ class HomeScreen extends StatelessWidget {
                             itemCount: localNotes.length,
                             itemBuilder: (context, index) {
                               final note = localNotes[index];
-
                               return Dismissible(
                                 key: Key(note.noteId.toString()),
                                 direction: DismissDirection.endToStart,
                                 onDismissed: (direction) async {
                                   final noteId = note.noteId.toString();
-
-                                  final deletedNote = note;
-
-                                  cubit.removeNoteFromList(noteId);
-
-                                  await cubit.deleteNote(noteId);
+                                  // await cubit.deleteNote(noteId);
+                                  // cubit.refreshNotes();
 
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -219,7 +277,6 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                   );
                                 },
-
                                 background: Container(
                                   color: Colors.red,
                                   alignment: Alignment.centerRight,
@@ -253,43 +310,41 @@ class HomeScreen extends StatelessWidget {
                                 6.verticalSpace,
                           );
                         },
-                      );
-                    },
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
-
-      /// Floating action button to add new note
-      floatingActionButton: Container(
-        width: 55.w,
-        height: 55.w,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        child: FloatingActionButton(
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const CreateNotePage()),
-            );
-            if (result == true) {
-              context.read<HomeScreenCubit>().refreshNotes();
-            }
-          },
-          child: Icon(Icons.note_add_rounded, size: 28.r),
+        floatingActionButton: Container(
+          width: 55.w,
+          height: 55.w,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 10,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: FloatingActionButton(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CreateNotePage()),
+              );
+              if (result == true) {
+                context.read<HomeScreenCubit>().refreshNotes();
+              }
+            },
+            child: Icon(Icons.note_add_rounded, size: 28.r),
+          ),
         ),
       ),
     );
