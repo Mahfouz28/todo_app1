@@ -52,8 +52,8 @@ class UserDataLoaded extends HomeScreenState {
 class NoteDeletedSuccess extends HomeScreenState {}
 
 class NoteError extends HomeScreenState {
-  String Messege;
-  NoteError(this.Messege) {}
+  String messege;
+  NoteError(this.messege) {}
 }
 
 class NoteUpdatedSuccess extends HomeScreenState {}

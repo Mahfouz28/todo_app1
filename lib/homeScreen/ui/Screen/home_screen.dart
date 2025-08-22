@@ -16,11 +16,13 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<HomeScreenCubit, HomeScreenState>(
+      // Listen only when notes are loading, fetched, or an error occurs
       listenWhen: (previous, current) =>
           current is NotesLoading ||
           current is NotesFetched ||
           current is HomeScreenError,
       listener: (context, state) {
+        // Show loading dialog when fetching notes
         if (state is NotesLoading) {
           showDialog(
             context: context,
@@ -54,7 +56,9 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           );
-        } else if (state is NotesFetched || state is HomeScreenError) {
+        }
+        // Close dialog when notes are fetched or error happens
+        else if (state is NotesFetched || state is HomeScreenError) {
           if (Navigator.canPop(context)) {
             Navigator.of(context).pop();
           }
@@ -66,6 +70,7 @@ class HomeScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: RefreshIndicator(
+              // Pull-to-refresh to reload notes
               onRefresh: () async {
                 await context.read<HomeScreenCubit>().refreshNotes();
               },
@@ -76,12 +81,15 @@ class HomeScreen extends StatelessWidget {
                 physics: BouncingScrollPhysics(),
                 child: Column(
                   children: [
+                    // Header with username
                     BlocBuilder<HomeScreenCubit, HomeScreenState>(
                       builder: (context, state) {
                         final cubit = context.watch<HomeScreenCubit>();
                         return NotesHeader(username: cubit.userName ?? "User");
                       },
                     ),
+
+                    // Search bar for filtering notes
                     CustomTextFormField(
                       hintText: 'Search',
                       controller: context
@@ -91,7 +99,10 @@ class HomeScreen extends StatelessWidget {
                         context.read<HomeScreenCubit>().searchNotes(value);
                       },
                     ),
+
                     20.verticalSpace,
+
+                    // Category cards (All Notes, Favourites, Hidden, Trash)
                     BlocBuilder<HomeScreenCubit, HomeScreenState>(
                       builder: (context, state) {
                         final cubit = context.watch<HomeScreenCubit>();
@@ -159,7 +170,10 @@ class HomeScreen extends StatelessWidget {
                         );
                       },
                     ),
+
                     20.verticalSpace,
+
+                    // Section Title: Recent Notes
                     Align(
                       alignment: Alignment.topLeft,
                       child: Text(
@@ -171,6 +185,8 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     15.verticalSpace,
+
+                    // Show last two notes or search results
                     BlocBuilder<HomeScreenCubit, HomeScreenState>(
                       builder: (context, state) {
                         final cubit = context.watch<HomeScreenCubit>();
@@ -212,6 +228,8 @@ class HomeScreen extends StatelessWidget {
                         );
                       },
                     ),
+
+                    // All notes list
                     Padding(
                       padding: const EdgeInsets.only(top: 10, bottom: 0),
                       child: BlocBuilder<HomeScreenCubit, HomeScreenState>(
@@ -240,9 +258,10 @@ class HomeScreen extends StatelessWidget {
                                 direction: DismissDirection.endToStart,
                                 onDismissed: (direction) async {
                                   final noteId = note.noteId.toString();
-                                  // await cubit.deleteNote(noteId);
-                                  // cubit.refreshNotes();
+                                  // Example: you can call cubit.deleteNote(noteId);
+                                  // await cubit.refreshNotes();
 
+                                  // Show snackbar when a note is deleted
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Row(
@@ -318,6 +337,8 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ),
+
+        // Floating button to add new note
         floatingActionButton: Container(
           width: 55.w,
           height: 55.w,
@@ -335,10 +356,12 @@ class HomeScreen extends StatelessWidget {
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,
             onPressed: () async {
+              // Navigate to CreateNotePage
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const CreateNotePage()),
               );
+              // Refresh notes after new note is added
               if (result == true) {
                 context.read<HomeScreenCubit>().refreshNotes();
               }

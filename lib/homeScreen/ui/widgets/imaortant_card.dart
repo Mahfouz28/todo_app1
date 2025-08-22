@@ -32,9 +32,15 @@ class ImportantInfo extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp),
+              Flexible(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.sp,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ),
               TextButton(
                 onPressed: onPressed,
@@ -45,7 +51,11 @@ class ImportantInfo extends StatelessWidget {
           SizedBox(height: 8.h),
           Text(
             subtitle,
-            style: TextStyle(color: Colors.black87, fontSize: 14.sp),
+            style: TextStyle(
+              color: Colors.black87,
+              fontSize: 14.sp,
+              overflow: TextOverflow.fade,
+            ),
             maxLines: 5,
             overflow: TextOverflow.ellipsis,
           ),
